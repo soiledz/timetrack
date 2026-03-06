@@ -1,0 +1,160 @@
+﻿:root {
+  --bg: #f2f5f9;
+  --panel: #ffffff;
+  --text: #182230;
+  --muted: #5f6f82;
+  --accent: #0f8cff;
+  --stop: #f25f5c;
+  --success: #2f9e44;
+  --border: #dbe4ee;
+  --shadow: 0 10px 24px rgba(15, 34, 56, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app-shell {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 16px 14px 24px;
+  color: var(--text);
+}
+
+.card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+}
+
+.card h1,
+.card h2,
+.card h3,
+.card p {
+  margin: 0;
+}
+
+.card h1 {
+  font-size: 1.3rem;
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+.card h2 {
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.card p + p {
+  margin-top: 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.task-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.task-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.95rem;
+  background: #ffffff;
+}
+
+.button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button-main {
+  background: var(--accent);
+}
+
+.button-stop {
+  background: var(--stop);
+}
+
+.button-success {
+  background: var(--success);
+}
+
+.task-list {
+  display: grid;
+  gap: 8px;
+}
+
+.task-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.status-bar {
+  background: var(--panel);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.status-error {
+  color: #b42318;
+  font-size: 0.85rem;
+}
+
+.status-ok {
+  color: #166534;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .task-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .task-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .task-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
