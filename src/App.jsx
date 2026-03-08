@@ -29,6 +29,7 @@ function createTask(title, orderIndex) {
     created_at: currentIso(),
     updated_at: currentIso(),
     order_index: orderIndex,
+    comment: '',
   }
 }
 
@@ -81,7 +82,7 @@ function App() {
       try {
         const data = await loadWorkdayState({ telegramUserId: userId, workdayDate })
         setSession(data.session)
-        setTasks(data.tasks ?? [])
+        setTasks((data.tasks ?? []).map((task) => ({ ...task, comment: task.comment ?? '' })))
 
         const historyRows = await loadWorkdayHistory({ telegramUserId: userId })
         setHistory(historyRows)
@@ -241,6 +242,22 @@ function App() {
     setSuccessText('Задача завершена')
   }
 
+  function updateTaskComment(taskId, comment) {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== taskId) {
+          return task
+        }
+
+        return {
+          ...task,
+          comment,
+          updated_at: currentIso(),
+        }
+      }),
+    )
+  }
+
   function finishWorkday() {
     if (!session || session.ended_at) {
       return
@@ -289,7 +306,8 @@ function App() {
 
     const lines = tasks.map((task) => {
       const seconds = getTaskLiveSeconds(task, nowMs)
-      return `${task.title} - ${formatSeconds(seconds)}`
+      const commentLine = task.comment?.trim() ? `\nКомментарий: ${task.comment.trim()}` : ''
+      return `${task.title} - ${formatSeconds(seconds)}${commentLine}`
     })
 
     const report = [`${telegramUserName}, ${dayDate}`, `Смена: ${startTime} - ${endTime}`, '', ...lines].join('\n')
@@ -413,6 +431,12 @@ function App() {
                     <div>
                       <h3>{task.title}</h3>
                       <p className="muted">Время: {formatSeconds(seconds)}</p>
+                      <textarea
+                        className="task-comment"
+                        placeholder="Комментарий к задаче (можно после завершения)"
+                        value={task.comment ?? ''}
+                        onChange={(event) => updateTaskComment(task.id, event.target.value)}
+                      />
                     </div>
                     <div className="task-actions">
                       <button

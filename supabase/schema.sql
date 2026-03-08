@@ -25,10 +25,13 @@ create table if not exists public.tasks (
   is_completed boolean not null default false,
   running_started_at timestamptz,
   completed_at timestamptz,
+  comment text not null default '',
   order_index integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.tasks add column if not exists comment text not null default '';
 
 create index if not exists idx_tasks_session on public.tasks(session_id);
 create index if not exists idx_tasks_user_session on public.tasks(user_id, session_id);
