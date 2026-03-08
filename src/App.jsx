@@ -2,7 +2,7 @@
 import './App.css'
 import { loadWorkdayHistory, loadWorkdayState, saveWorkdayState } from './lib/storage'
 import { hasSupabaseConfig } from './lib/supabase'
-import { getTelegramUserId, initTelegramUi } from './lib/telegram'
+import { getTelegramUserId, getTelegramUserName, initTelegramUi } from './lib/telegram'
 
 function formatSeconds(totalSeconds) {
   const seconds = Math.max(0, totalSeconds)
@@ -44,6 +44,7 @@ function getTaskLiveSeconds(task, nowMs) {
 function App() {
   const [page, setPage] = useState('today')
   const [telegramUserId, setTelegramUserId] = useState('local-dev-user')
+  const [telegramUserName, setTelegramUserName] = useState('Гость')
   const [session, setSession] = useState(null)
   const [history, setHistory] = useState([])
   const [isHistoryLoading, setIsHistoryLoading] = useState(false)
@@ -72,7 +73,9 @@ function App() {
     initTelegramUi()
 
     const userId = getTelegramUserId()
+    const userName = getTelegramUserName()
     setTelegramUserId(userId)
+    setTelegramUserName(userName)
 
     async function bootstrap() {
       try {
@@ -309,7 +312,7 @@ function App() {
           <section className="card">
             <p className="muted">Сегодня</p>
             <h1>{prettyDate}</h1>
-            <p className="muted">ID пользователя: {telegramUserId}</p>
+            <p className="muted">Привет, {telegramUserName}</p>
           </section>
 
           <section className="card">

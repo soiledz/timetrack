@@ -15,6 +15,23 @@ export function getTelegramUserId() {
   return 'local-dev-user'
 }
 
+export function getTelegramUserName() {
+  const webApp = getTelegramWebApp()
+  const firstName = webApp?.initDataUnsafe?.user?.first_name
+  const username = webApp?.initDataUnsafe?.user?.username
+
+  if (firstName) {
+    return firstName
+  }
+
+  if (username) {
+    return username
+  }
+
+  // Режим локальной разработки вне Telegram.
+  return 'Гость'
+}
+
 export function initTelegramUi() {
   const webApp = getTelegramWebApp()
 
