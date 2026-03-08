@@ -21,6 +21,29 @@
   color: var(--text);
 }
 
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tab-button {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.tab-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 4px 12px rgba(15, 140, 255, 0.18);
+}
+
 .card {
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   border: 1px solid var(--border);

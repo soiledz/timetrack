@@ -67,6 +67,30 @@ export async function loadWorkdayState({ telegramUserId, workdayDate }) {
   }
 }
 
+export async function loadWorkdayHistory({ telegramUserId, limit = 60 }) {
+  if (!hasSupabaseConfig) {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
+    const parsed = safeJsonParse(raw, { session: null, tasks: [] })
+    return parsed.session ? [parsed.session] : []
+  }
+
+  const userId = await ensureAnonymousAuth()
+
+  const { data, error } = await supabase
+    .from('workday_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('telegram_user_id', telegramUserId)
+    .order('workday_date', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    throw error
+  }
+
+  return data ?? []
+}
+
 export async function saveWorkdayState({ telegramUserId, workdayDate, session, tasks }) {
   if (!hasSupabaseConfig) {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ session, tasks }))
