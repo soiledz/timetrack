@@ -42,3 +42,16 @@ export function initTelegramUi() {
   webApp.ready()
   webApp.expand()
 }
+
+export function shareTextToTelegram(text) {
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me')}&text=${encodeURIComponent(text)}`
+  const webApp = getTelegramWebApp()
+
+  if (webApp?.openTelegramLink) {
+    webApp.openTelegramLink(shareUrl)
+    return true
+  }
+
+  window.open(shareUrl, '_blank', 'noopener,noreferrer')
+  return true
+}

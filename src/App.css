@@ -126,6 +126,10 @@
   background: var(--success);
 }
 
+.button-share {
+  background: #2563eb;
+}
+
 .task-list {
   display: grid;
   gap: 8px;

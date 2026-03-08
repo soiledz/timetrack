@@ -2,7 +2,7 @@
 import './App.css'
 import { loadWorkdayHistory, loadWorkdayState, saveWorkdayState } from './lib/storage'
 import { hasSupabaseConfig } from './lib/supabase'
-import { getTelegramUserId, getTelegramUserName, initTelegramUi } from './lib/telegram'
+import { getTelegramUserId, getTelegramUserName, initTelegramUi, shareTextToTelegram } from './lib/telegram'
 
 function formatSeconds(totalSeconds) {
   const seconds = Math.max(0, totalSeconds)
@@ -276,6 +276,29 @@ function App() {
     setSuccessText('Рабочий день завершен')
   }
 
+  function shareDayResults() {
+    if (!session || tasks.length === 0) {
+      setErrorText('Нет данных для отправки')
+      return
+    }
+
+    const nowMs = Date.now()
+    const dayDate = new Date(workdayDate).toLocaleDateString('ru-RU')
+    const startTime = session.started_at ? new Date(session.started_at).toLocaleTimeString('ru-RU') : '—'
+    const endTime = session.ended_at ? new Date(session.ended_at).toLocaleTimeString('ru-RU') : 'в процессе'
+
+    const lines = tasks.map((task) => {
+      const seconds = getTaskLiveSeconds(task, nowMs)
+      return `${task.title} - ${formatSeconds(seconds)}`
+    })
+
+    const report = [`${telegramUserName}, ${dayDate}`, `Смена: ${startTime} - ${endTime}`, '', ...lines].join('\n')
+
+    shareTextToTelegram(report)
+    setSuccessText('Отчет открыт для отправки в Telegram')
+    setErrorText('')
+  }
+
   const prettyDate = new Intl.DateTimeFormat('ru-RU', {
     weekday: 'long',
     day: '2-digit',
@@ -413,6 +436,9 @@ function App() {
             {isSaving ? <span className="muted">Сохраняем...</span> : <span className="muted">Синхронизировано</span>}
             {errorText ? <span className="status-error">{errorText}</span> : null}
             {!errorText && successText ? <span className="status-ok">{successText}</span> : null}
+            <button className="button button-share" onClick={shareDayResults}>
+              Поделиться результатами дня
+            </button>
             <span className="muted">Режим хранения: {hasSupabaseConfig ? 'Supabase' : 'localStorage (demo)'}</span>
           </footer>
         </>
