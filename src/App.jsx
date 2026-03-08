@@ -170,28 +170,49 @@ function App() {
     setSuccessText('Задача запущена')
   }
 
-  function stopTask(taskId) {
+  function toggleTaskPauseResume(taskId) {
     const now = Date.now()
 
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id !== taskId || !task.is_running || !task.running_started_at) {
+    setTasks((prev) => {
+      const hasAnotherRunningTask = prev.some((task) => task.is_running && task.id !== taskId)
+
+      return prev.map((task) => {
+        if (task.id !== taskId || task.is_completed) {
           return task
         }
 
-        const seconds = getTaskLiveSeconds(task, now)
+        // Если задача идет, ставим ее на паузу.
+        if (task.is_running && task.running_started_at) {
+          const seconds = getTaskLiveSeconds(task, now)
+          return {
+            ...task,
+            elapsed_seconds: seconds,
+            is_running: false,
+            running_started_at: null,
+            updated_at: currentIso(),
+          }
+        }
+
+        // Если уже есть другая активная задача, эту продолжить нельзя.
+        if (hasAnotherRunningTask) {
+          return task
+        }
 
         return {
           ...task,
-          elapsed_seconds: seconds,
-          is_running: false,
-          running_started_at: null,
+          is_running: true,
+          running_started_at: currentIso(),
           updated_at: currentIso(),
         }
-      }),
-    )
+      })
+    })
 
-    setSuccessText('Задача остановлена')
+    const targetTask = tasks.find((task) => task.id === taskId)
+    if (targetTask?.is_running) {
+      setSuccessText('Задача на паузе')
+    } else {
+      setSuccessText('Задача продолжена')
+    }
   }
 
   function completeTask(taskId) {
@@ -371,8 +392,12 @@ function App() {
                       <p className="muted">Время: {formatSeconds(seconds)}</p>
                     </div>
                     <div className="task-actions">
-                      <button className="button button-stop" onClick={() => stopTask(task.id)} disabled={!task.is_running || task.is_completed}>
-                        Стоп
+                      <button
+                        className="button button-stop"
+                        onClick={() => toggleTaskPauseResume(task.id)}
+                        disabled={task.is_completed || (!task.is_running && Boolean(activeTask) && activeTask.id !== task.id)}
+                      >
+                        {task.is_running ? 'Пауза' : 'Продолжить'}
                       </button>
                       <button className="button button-success" onClick={() => completeTask(task.id)} disabled={task.is_completed}>
                         Завершить
